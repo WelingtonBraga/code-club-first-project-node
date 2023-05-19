@@ -1,8 +1,11 @@
-const  express = require('express')
-const uuid = require('uuid')
-const port = 3000
-const app = express()
-app.use(express.json())
+const  express = require("express");
+const uuid = require("uuid");
+const cors = require ("cors");
+
+const port = 3001;
+const app = express();
+app.use(express.json());
+app.use(cors());
 
 /* // -Query params => meusite.com?nome=rodolfo&age=28  //filtros
 
@@ -35,9 +38,9 @@ app.get('/users',(request, response) =>{
 })
 */
 
-const users = []
+const users = [];
 const check_user_id = (request, response, next) => {
-    const {id} = request.params
+    const {id} = request.params;
     
     const index = users.findIndex(user => user.id === id)
     
@@ -58,14 +61,19 @@ app.get('/users',(request, response) =>{
 
 // Criando um usuario no banco de dados
 app.post('/users',(request, response) =>{
-    const {name, age} = request.body
-
-    const user = {id:uuid.v4(), name, age}
     
-    users.push(user)
+    try{    
+        const {name, age} = request.body
 
-    return response.status(201).json(user)
-})
+        const user = {id:uuid.v4(), name, age}
+    
+        users.push(user)
+
+        return response.status(201).json(user)
+    }catch(err){
+        return response.status(500).json({error:err.message});
+    }
+});
 
 // Atualizar usuario ezistente
 app.put('/users/:id',check_user_id,(request, response) =>{
